@@ -3,305 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClickMart - Online Shopping</title>
+<title>ClickMart</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial, sans-serif;
-}
-
+*{box-sizing:border-box;margin:0;padding:0}
 body{
+  font-family:Arial,sans-serif;
   background:#f5f6f8;
   color:#222;
 }
-
-/* HEADER */
 header{
-  background:#ffffff;
-  padding:15px 5%;
+  background:white;
+  padding:18px 5%;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:20px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
   position:sticky;
   top:0;
-  z-index:100;
+  z-index:10;
+  box-shadow:0 2px 10px #00000012;
 }
-
 .logo{
-  font-size:25px;
-  font-weight:bold;
+  font-size:28px;
+  font-weight:800;
   color:#ff4d00;
 }
-
-.search{
-  flex:1;
-  max-width:550px;
-  display:flex;
-}
-
-.search input{
-  width:100%;
-  padding:13px 16px;
-  border:1px solid #ddd;
-  border-radius:8px 0 0 8px;
-  outline:none;
-}
-
-.search button{
-  border:none;
+.cart{
   background:#ff4d00;
   color:white;
-  padding:0 20px;
-  border-radius:0 8px 8px 0;
+  padding:10px 16px;
+  border-radius:25px;
+  border:0;
   cursor:pointer;
 }
-
-.cart{
-  font-size:17px;
-  font-weight:bold;
-  cursor:pointer;
+.searchbox{
+  padding:30px 5%;
+  background:white;
+  display:flex;
+  gap:10px;
 }
-
-.cart span{
+.searchbox input{
+  flex:1;
+  padding:15px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
+}
+.searchbox button{
+  padding:15px 25px;
+  border:0;
+  border-radius:10px;
   background:#ff4d00;
-  color:#fff;
-  padding:3px 7px;
-  border-radius:50%;
-  font-size:12px;
+  color:white;
 }
-
-/* HERO */
 .hero{
-  margin:25px auto;
-  width:90%;
-  max-width:1200px;
-  min-height:280px;
-  border-radius:15px;
-  padding:50px;
+  margin:35px 5%;
+  padding:60px 7%;
+  border-radius:25px;
   background:linear-gradient(135deg,#ff4d00,#ff8a00);
   color:white;
-  display:flex;
-  align-items:center;
 }
-
-.hero h1{
-  font-size:42px;
-  margin-bottom:12px;
-}
-
-.hero p{
-  font-size:18px;
-  margin-bottom:20px;
-}
-
+.hero h1{font-size:42px;margin-bottom:15px}
+.hero p{font-size:18px;margin-bottom:25px}
 .hero button{
+  padding:14px 25px;
+  border:0;
+  border-radius:10px;
   background:white;
   color:#ff4d00;
-  border:none;
-  padding:12px 25px;
-  border-radius:7px;
   font-weight:bold;
-  cursor:pointer;
 }
-
-/* CATEGORY */
-.container{
-  width:90%;
-  max-width:1200px;
-  margin:auto;
-}
-
-.section-title{
-  margin:30px 0 18px;
-  font-size:25px;
-}
-
+section{padding:20px 5%}
+h2{margin-bottom:20px}
 .categories{
   display:grid;
-  grid-template-columns:repeat(6,1fr);
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
   gap:15px;
 }
-
 .category{
   background:white;
-  padding:20px 10px;
+  padding:25px 10px;
   text-align:center;
-  border-radius:10px;
+  border-radius:15px;
   cursor:pointer;
-  box-shadow:0 2px 6px rgba(0,0,0,.06);
-  transition:.2s;
+  box-shadow:0 3px 12px #0000000d;
 }
-
-.category:hover{
-  transform:translateY(-4px);
-}
-
-.category .icon{
-  font-size:35px;
-  margin-bottom:8px;
-}
-
-/* PRODUCTS */
 .products{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-  margin-bottom:40px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
 }
-
 .product{
   background:white;
-  border-radius:12px;
+  border-radius:18px;
   overflow:hidden;
-  position:relative;
-  box-shadow:0 2px 8px rgba(0,0,0,.07);
-  transition:.2s;
+  box-shadow:0 3px 15px #00000012;
 }
-
-.product:hover{
-  transform:translateY(-4px);
-}
-
-.product-img{
-  height:210px;
+.product img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
   background:#eee;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:75px;
 }
-
-.discount{
-  position:absolute;
-  top:10px;
-  left:10px;
-  background:#ff4d00;
-  color:white;
-  padding:5px 8px;
-  border-radius:5px;
-  font-size:12px;
-  font-weight:bold;
-}
-
-.product-info{
-  padding:15px;
-}
-
-.product-name{
-  font-weight:bold;
-  margin-bottom:8px;
-}
-
-.rating{
-  color:#ff9d00;
-  margin-bottom:8px;
-}
-
+.product-info{padding:18px}
+.product h3{margin-bottom:10px}
 .price{
   color:#ff4d00;
-  font-size:20px;
+  font-size:22px;
   font-weight:bold;
 }
-
-.old-price{
+.old{
   color:#999;
   text-decoration:line-through;
-  font-size:13px;
-  margin-left:5px;
+  font-size:14px;
+  margin-left:8px;
 }
-
 .add{
   width:100%;
-  margin-top:12px;
-  padding:10px;
-  border:none;
+  margin-top:15px;
+  padding:13px;
+  border:0;
+  border-radius:10px;
   background:#ff4d00;
   color:white;
-  border-radius:6px;
   cursor:pointer;
-  font-weight:bold;
 }
-
-/* FOOTER */
 footer{
+  margin-top:50px;
   background:#222;
-  color:#ddd;
+  color:white;
   text-align:center;
-  padding:30px;
-  margin-top:30px;
+  padding:35px;
 }
-
-/* MOBILE */
-@media(max-width:800px){
-  header{
-    flex-wrap:wrap;
-  }
-
-  .search{
-    order:3;
-    flex-basis:100%;
-    max-width:none;
-  }
-
-  .hero{
-    padding:30px;
-    min-height:230px;
-  }
-
-  .hero h1{
-    font-size:30px;
-  }
-
-  .categories{
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .products{
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
-  }
-
-  .product-img{
-    height:160px;
-    font-size:55px;
-  }
+.admin{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#f5f6f8;
+  z-index:100;
+  overflow:auto;
 }
-
-@media(max-width:450px){
-  .logo{
-    font-size:20px;
-  }
-
-  .hero{
-    width:94%;
-    padding:25px;
-  }
-
-  .container{
-    width:94%;
-  }
-
-  .categories{
-    gap:8px;
-  }
-
-  .category{
-    padding:15px 5px;
-    font-size:13px;
-  }
-
-  .category .icon{
-    font-size:28px;
-  }
-
-  .section-title{
-    font-size:21px;
-  }
+.admin-head{
+  background:#222;
+  color:white;
+  padding:18px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.admin-main{padding:25px 5%}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  margin-bottom:20px;
+}
+.card input,.card textarea{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+.btn{
+  padding:11px 18px;
+  border:0;
+  border-radius:8px;
+  background:#ff4d00;
+  color:white;
+  cursor:pointer;
+  margin-top:8px;
+}
+.product-row{
+  border:1px solid #ddd;
+  padding:15px;
+  border-radius:10px;
+  margin-top:10px;
+}
+@media(max-width:600px){
+  .hero h1{font-size:30px}
+  .hero{padding:40px 25px}
 }
 </style>
 </head>
@@ -310,170 +191,368 @@ footer{
 
 <header>
   <div class="logo">🛒 ClickMart</div>
-
-  <div class="search">
-    <input type="text" id="search" placeholder="Search products...">
-    <button onclick="searchProduct()">Search</button>
-  </div>
-
-  <div class="cart">
-    🛍️ Cart <span id="cartCount">0</span>
-  </div>
+  <button class="cart" onclick="showCart()">🛍️ Cart <span id="cartCount">0</span></button>
 </header>
 
-<section class="hero">
-  <div>
-    <h1>Big Shopping Sale!</h1>
-    <p>Discover amazing products at amazing prices.</p>
-    <button onclick="scrollToProducts()">Shop Now →</button>
-  </div>
+<div class="searchbox">
+  <input id="search" placeholder="Search products..." oninput="renderProducts()">
+  <button onclick="renderProducts()">Search</button>
+</div>
+
+<div class="hero">
+  <h1 id="heroTitle">Big Shopping Sale!</h1>
+  <p id="heroText">Discover amazing products at amazing prices.</p>
+  <button onclick="document.getElementById('products').scrollIntoView()">Shop Now →</button>
+</div>
+
+<section>
+  <h2>Shop By Category</h2>
+  <div class="categories" id="categories"></div>
 </section>
 
-<div class="container">
-
-<h2 class="section-title">Shop By Category</h2>
-
-<div class="categories">
-
-  <div class="category">
-    <div class="icon">📱</div>
-    Electronics
-  </div>
-
-  <div class="category">
-    <div class="icon">👕</div>
-    Fashion
-  </div>
-
-  <div class="category">
-    <div class="icon">🏠</div>
-    Home
-  </div>
-
-  <div class="category">
-    <div class="icon">💄</div>
-    Beauty
-  </div>
-
-  <div class="category">
-    <div class="icon">🎮</div>
-    Gaming
-  </div>
-
-  <div class="category">
-    <div class="icon">⌚</div>
-    Watches
-  </div>
-
-</div>
-
-<h2 class="section-title" id="products">Popular Products</h2>
-
-<div class="products" id="productList">
-
-  <div class="product">
-    <div class="discount">-20%</div>
-    <div class="product-img">📱</div>
-    <div class="product-info">
-      <div class="product-name">Smartphone Pro</div>
-      <div class="rating">★★★★★</div>
-      <div>
-        <span class="price">৳18,999</span>
-        <span class="old-price">৳23,999</span>
-      </div>
-      <button class="add" onclick="addCart()">Add to Cart</button>
-    </div>
-  </div>
-
-  <div class="product">
-    <div class="discount">-15%</div>
-    <div class="product-img">🎧</div>
-    <div class="product-info">
-      <div class="product-name">Wireless Headphone</div>
-      <div class="rating">★★★★☆</div>
-      <div>
-        <span class="price">৳1,499</span>
-        <span class="old-price">৳1,799</span>
-      </div>
-      <button class="add" onclick="addCart()">Add to Cart</button>
-    </div>
-  </div>
-
-  <div class="product">
-    <div class="discount">-30%</div>
-    <div class="product-img">⌚</div>
-    <div class="product-info">
-      <div class="product-name">Smart Watch</div>
-      <div class="rating">★★★★★</div>
-      <div>
-        <span class="price">৳2,099</span>
-        <span class="old-price">৳2,999</span>
-      </div>
-      <button class="add" onclick="addCart()">Add to Cart</button>
-    </div>
-  </div>
-
-  <div class="product">
-    <div class="discount">-25%</div>
-    <div class="product-img">👟</div>
-    <div class="product-info">
-      <div class="product-name">Premium Sneakers</div>
-      <div class="rating">★★★★☆</div>
-      <div>
-        <span class="price">৳1,899</span>
-        <span class="old-price">৳2,499</span>
-      </div>
-      <button class="add" onclick="addCart()">Add to Cart</button>
-    </div>
-  </div>
-
-</div>
-
-</div>
+<section id="products">
+  <h2>Popular Products</h2>
+  <div class="products" id="productList"></div>
+</section>
 
 <footer>
-  <h3>🛒 ClickMart</h3>
-  <p>© 2026 ClickMart. All Rights Reserved.</p>
+  <div class="logo">🛒 ClickMart</div>
+  <p style="margin-top:10px">© 2026 ClickMart. All Rights Reserved.</p>
 </footer>
+
+<!-- ADMIN DASHBOARD -->
+
+<div class="admin" id="adminPanel">
+
+  <div class="admin-head">
+    <strong>⚙️ ClickMart Admin</strong>
+    <button class="btn" onclick="closeAdmin()">Close</button>
+  </div>
+
+  <div class="admin-main">
+
+    <div class="card">
+      <h2>Store Settings</h2>
+
+      <label>Store Name</label>
+      <input id="storeName" value="ClickMart">
+
+      <label>Hero Title</label>
+      <input id="adminHeroTitle" value="Big Shopping Sale!">
+
+      <label>Hero Description</label>
+      <textarea id="adminHeroText">Discover amazing products at amazing prices.</textarea>
+
+      <button class="btn" onclick="saveSettings()">Save Settings</button>
+    </div>
+
+    <div class="card">
+      <h2>Add Product</h2>
+
+      <input id="pName" placeholder="Product name">
+      <input id="pPrice" type="number" placeholder="Price">
+      <input id="pOldPrice" type="number" placeholder="Old price">
+      <input id="pCategory" placeholder="Category">
+      <input id="pImage" placeholder="Image URL">
+
+      <button class="btn" onclick="addProduct()">Add Product</button>
+    </div>
+
+    <div class="card">
+      <h2>Products</h2>
+      <div id="adminProducts"></div>
+    </div>
+
+  </div>
+</div>
 
 <script>
 
-let cart = 0;
+/* =========================
+   SUPABASE CONFIG
+========================= */
 
-function addCart(){
-  cart++;
-  document.getElementById("cartCount").innerText = cart;
-  alert("Product added to cart!");
+const SUPABASE_URL =
+"https://xmgvszxmofbyzejcxlku.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_c8vQsp8cKDjkWjRLCpvoNQ_qoOUvYAB";
+
+
+/* =========================
+   DEMO DATA
+========================= */
+
+let products = [
+ {
+  id:1,
+  name:"Smartphone Pro",
+  price:18999,
+  oldPrice:23999,
+  category:"Electronics",
+  image:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600"
+ },
+ {
+  id:2,
+  name:"Wireless Headphone",
+  price:1499,
+  oldPrice:1799,
+  category:"Electronics",
+  image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600"
+ },
+ {
+  id:3,
+  name:"Smart Watch",
+  price:2099,
+  oldPrice:2999,
+  category:"Watches",
+  image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"
+ },
+ {
+  id:4,
+  name:"Premium Sneakers",
+  price:1899,
+  oldPrice:2499,
+  category:"Fashion",
+  image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600"
+ }
+];
+
+let cart=[];
+
+let categories=[
+ "📱 Electronics",
+ "👕 Fashion",
+ "🏠 Home",
+ "💄 Beauty",
+ "🎮 Gaming",
+ "⌚ Watches"
+];
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderCategories(){
+ const box=document.getElementById("categories");
+
+ box.innerHTML=categories.map(c=>`
+   <div class="category" onclick="filterCategory('${c.replace(/^[^ ]+ /,'')}')">
+      <div style="font-size:35px">${c.split(" ")[0]}</div>
+      <div style="margin-top:10px">${c.substring(c.indexOf(" ")+1)}</div>
+   </div>
+ `).join("");
 }
 
-function scrollToProducts(){
-  document.getElementById("products").scrollIntoView({
-    behavior:"smooth"
-  });
+
+function renderProducts(){
+
+ const box=document.getElementById("productList");
+
+ const search=document.getElementById("search").value.toLowerCase();
+
+ const filtered=products.filter(p =>
+   p.name.toLowerCase().includes(search) ||
+   p.category.toLowerCase().includes(search)
+ );
+
+ box.innerHTML=filtered.map(p=>`
+
+   <div class="product">
+
+      <img src="${p.image}" alt="${p.name}">
+
+      <div class="product-info">
+
+        <h3>${p.name}</h3>
+
+        <div style="color:#f5a000;margin-bottom:10px">
+          ★★★★★
+        </div>
+
+        <span class="price">৳${Number(p.price).toLocaleString()}</span>
+
+        <span class="old">
+          ৳${Number(p.oldPrice).toLocaleString()}
+        </span>
+
+        <button class="add" onclick="addToCart(${p.id})">
+          Add to Cart
+        </button>
+
+      </div>
+
+   </div>
+
+ `).join("");
 }
 
-function searchProduct(){
 
-  let value =
-    document.getElementById("search").value.toLowerCase();
+function filterCategory(category){
 
-  let products =
-    document.querySelectorAll(".product");
+ document.getElementById("search").value=category;
 
-  products.forEach(product => {
+ renderProducts();
 
-    let name =
-      product.querySelector(".product-name")
-      .innerText.toLowerCase();
-
-    if(name.includes(value)){
-      product.style.display = "block";
-    }else{
-      product.style.display = "none";
-    }
-
-  });
 }
+
+
+/* =========================
+   CART
+========================= */
+
+function addToCart(id){
+
+ const product=products.find(p=>p.id===id);
+
+ cart.push(product);
+
+ document.getElementById("cartCount").innerText=cart.length;
+
+ alert(product.name+" added to cart!");
+}
+
+
+function showCart(){
+
+ if(cart.length===0){
+   alert("Your cart is empty.");
+   return;
+ }
+
+ let total=cart.reduce((sum,p)=>sum+Number(p.price),0);
+
+ alert(
+   "Cart Items: "+cart.length+
+   "\nTotal: ৳"+total.toLocaleString()
+ );
+
+}
+
+
+/* =========================
+   ADMIN
+========================= */
+
+function openAdmin(){
+
+ document.getElementById("adminPanel").style.display="block";
+
+ renderAdminProducts();
+
+}
+
+
+function closeAdmin(){
+
+ document.getElementById("adminPanel").style.display="none";
+
+}
+
+
+/* Hidden admin shortcut:
+   Add ?admin=true to your website URL
+*/
+
+if(new URLSearchParams(location.search).get("admin")==="true"){
+ setTimeout(openAdmin,500);
+}
+
+
+function renderAdminProducts(){
+
+ const box=document.getElementById("adminProducts");
+
+ box.innerHTML=products.map(p=>`
+
+   <div class="product-row">
+
+     <strong>${p.name}</strong>
+
+     <p>Price: ৳${p.price}</p>
+
+     <p>Category: ${p.category}</p>
+
+     <button class="btn"
+       onclick="deleteProduct(${p.id})">
+       Delete
+     </button>
+
+   </div>
+
+ `).join("");
+
+}
+
+
+function addProduct(){
+
+ const name=document.getElementById("pName").value;
+ const price=document.getElementById("pPrice").value;
+ const oldPrice=document.getElementById("pOldPrice").value;
+ const category=document.getElementById("pCategory").value;
+ const image=document.getElementById("pImage").value;
+
+ if(!name || !price){
+   alert("Product name and price are required.");
+   return;
+ }
+
+ products.push({
+   id:Date.now(),
+   name:name,
+   price:Number(price),
+   oldPrice:Number(oldPrice || price),
+   category:category || "General",
+   image:image || "https://via.placeholder.com/600"
+ });
+
+ document.getElementById("pName").value="";
+ document.getElementById("pPrice").value="";
+ document.getElementById("pOldPrice").value="";
+ document.getElementById("pCategory").value="";
+ document.getElementById("pImage").value="";
+
+ renderProducts();
+ renderAdminProducts();
+
+ alert("Product added!");
+
+}
+
+
+function deleteProduct(id){
+
+ if(!confirm("Delete this product?")) return;
+
+ products=products.filter(p=>p.id!==id);
+
+ renderProducts();
+ renderAdminProducts();
+
+}
+
+
+function saveSettings(){
+
+ const title=document.getElementById("adminHeroTitle").value;
+ const text=document.getElementById("adminHeroText").value;
+
+ document.getElementById("heroTitle").innerText=title;
+ document.getElementById("heroText").innerText=text;
+
+ alert("Settings saved!");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+renderCategories();
+renderProducts();
 
 </script>
 

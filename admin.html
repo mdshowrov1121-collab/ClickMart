@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClickMart Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,sans-serif;
+  background:#f4f5f7;
+  color:#222;
+}
+header{
+  background:#fff;
+  padding:18px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 10px #0001;
+}
+.logo{
+  color:#ff4d00;
+  font-size:24px;
+  font-weight:800;
+}
+button{
+  border:0;
+  border-radius:8px;
+  padding:11px 17px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.logout{
+  background:#222;
+  color:#fff;
+}
+main{
+  width:92%;
+  max-width:1200px;
+  margin:25px auto;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+.stat{
+  background:#fff;
+  padding:22px;
+  border-radius:14px;
+  box-shadow:0 2px 10px #0001;
+}
+.stat h3{
+  color:#777;
+  font-size:14px;
+}
+.stat p{
+  font-size:28px;
+  font-weight:bold;
+  margin-top:8px;
+  color:#ff4d00;
+}
+.card{
+  background:#fff;
+  margin-top:22px;
+  padding:22px;
+  border-radius:14px;
+  box-shadow:0 2px 10px #0001;
+}
+h2{margin-bottom:18px}
+input,textarea,select{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  margin:7px 0 13px;
+}
+textarea{min-height:90px}
+.primary{
+  background:#ff4d00;
+  color:#fff;
+}
+.product{
+  display:flex;
+  gap:15px;
+  align-items:center;
+  border:1px solid #eee;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+}
+.product img{
+  width:70px;
+  height:70px;
+  object-fit:cover;
+  border-radius:8px;
+}
+.product-info{flex:1}
+.delete{
+  background:#e53935;
+  color:#fff;
+}
+#loading{
+  text-align:center;
+  padding:50px;
+}
+#error{
+  color:red;
+  margin-top:10px;
+}
+@media(max-width:700px){
+  .stats{grid-template-columns:1fr}
+  .product{align-items:flex-start}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🛒 ClickMart Admin</div>
+  <button class="logout" onclick="logout()">Logout</button>
+</header>
+
+<main>
+
+<div id="loading">Checking admin access...</div>
+
+<div id="dashboard" style="display:none">
+
+  <div class="stats">
+    <div class="stat">
+      <h3>Total Products</h3>
+      <p id="productCount">0</p>
+    </div>
+
+    <div class="stat">
+      <h3>Total Categories</h3>
+      <p id="categoryCount">0</p>
+    </div>
+
+    <div class="stat">
+      <h3>Total Orders</h3>
+      <p id="orderCount">0</p>
+    </div>
+  </div>
+
+  <!-- ADD PRODUCT -->
+
+  <div class="card">
+    <h2>➕ Add Product</h2>
+
+    <input id="name" placeholder="Product name">
+
+    <textarea id="description"
+      placeholder="Product description"></textarea>
+
+    <input id="price"
+      type="number"
+      placeholder="Price">
+
+    <input id="oldPrice"
+      type="number"
+      placeholder="Old price">
+
+    <input id="category"
+      placeholder="Category">
+
+    <input id="stock"
+      type="number"
+      placeholder="Stock">
+
+    <input id="image"
+      placeholder="Product image URL">
+
+    <button class="primary"
+      onclick="addProduct()">
+      Add Product
+    </button>
+
+    <p id="error"></p>
+  </div>
+
+  <!-- PRODUCTS -->
+
+  <div class="card">
+    <h2>📦 Products</h2>
+    <div id="products"></div>
+  </div>
+
+</div>
+
+</main>
+
+<script>
+
+const SUPABASE_URL =
+"https://xmgvszxmofbyzejcxlku.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_c8vQsp8cKDjkWjRLCpvoNQ_qoOUvYAB";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* CHECK LOGIN */
+
+async function checkAdmin(){
+
+  const {
+    data:{session}
+  } = await supabaseClient.auth.getSession();
+
+  if(!session){
+    window.location.href="login.html";
+    return;
+  }
+
+  const {data,error} =
+    await supabaseClient
+      .from("admins")
+      .select("user_id")
+      .eq("user_id",session.user.id)
+      .maybeSingle();
+
+  if(error || !data){
+
+    document.getElementById("loading").innerHTML =
+      "❌ You are not an admin.";
+
+    return;
+  }
+
+  document.getElementById("loading").style.display="none";
+  document.getElementById("dashboard").style.display="block";
+
+  loadProducts();
+  loadStats();
+}
+
+
+/* LOAD PRODUCTS */
+
+async function loadProducts(){
+
+  const {data,error} =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .order("created_at",{ascending:false});
+
+  const box =
+    document.getElementById("products");
+
+  if(error){
+
+    box.innerHTML =
+      "<p>Could not load products.</p>";
+
+    return;
+  }
+
+  if(!data.length){
+
+    box.innerHTML =
+      "<p>No products yet.</p>";
+
+    return;
+  }
+
+  box.innerHTML=data.map(p=>`
+
+    <div class="product">
+
+      <img src="${
+        p.image_url ||
+        "https://via.placeholder.com/100"
+      }">
+
+      <div class="product-info">
+
+        <strong>${escapeHtml(p.name)}</strong>
+
+        <p>৳${Number(p.price).toLocaleString()}</p>
+
+        <small>
+          ${escapeHtml(p.category || "No category")}
+          · Stock: ${p.stock}
+        </small>
+
+      </div>
+
+      <button class="delete"
+        onclick="deleteProduct(${p.id})">
+        Delete
+      </button>
+
+    </div>
+
+  `).join("");
+}
+
+
+/* ADD PRODUCT */
+
+async function addProduct(){
+
+  const errorBox =
+    document.getElementById("error");
+
+  errorBox.textContent="";
+
+  const product={
+    name:document.getElementById("name").value.trim(),
+    description:document.getElementById("description").value.trim(),
+    price:Number(document.getElementById("price").value),
+    old_price:Number(document.getElementById("oldPrice").value) || null,
+    category:document.getElementById("category").value.trim(),
+    stock:Number(document.getElementById("stock").value) || 0,
+    image_url:document.getElementById("image").value.trim(),
+    active:true
+  };
+
+  if(!product.name || !product.price){
+
+    errorBox.textContent =
+      "Product name and price are required.";
+
+    return;
+  }
+
+  const {error} =
+    await supabaseClient
+      .from("products")
+      .insert(product);
+
+  if(error){
+
+    errorBox.textContent=error.message;
+    return;
+  }
+
+  alert("Product added successfully!");
+
+  document.getElementById("name").value="";
+  document.getElementById("description").value="";
+  document.getElementById("price").value="";
+  document.getElementById("oldPrice").value="";
+  document.getElementById("category").value="";
+  document.getElementById("stock").value="";
+  document.getElementById("image").value="";
+
+  loadProducts();
+  loadStats();
+}
+
+
+/* DELETE */
+
+async function deleteProduct(id){
+
+  if(!confirm("Delete this product?"))
+    return;
+
+  const {error} =
+    await supabaseClient
+      .from("products")
+      .delete()
+      .eq("id",id);
+
+  if(error){
+
+    alert(error.message);
+    return;
+  }
+
+  loadProducts();
+  loadStats();
+}
+
+
+/* STATS */
+
+async function loadStats(){
+
+  const products =
+    await supabaseClient
+      .from("products")
+      .select("id",{count:"exact",head:true});
+
+  const categories =
+    await supabaseClient
+      .from("categories")
+      .select("id",{count:"exact",head:true});
+
+  const orders =
+    await supabaseClient
+      .from("orders")
+      .select("id",{count:"exact",head:true});
+
+  document.getElementById("productCount")
+    .textContent=products.count || 0;
+
+  document.getElementById("categoryCount")
+    .textContent=categories.count || 0;
+
+  document.getElementById("orderCount")
+    .textContent=orders.count || 0;
+}
+
+
+/* LOGOUT */
+
+async function logout(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href="login.html";
+}
+
+
+/* SECURITY */
+
+function escapeHtml(text){
+
+  return String(text)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+
+/* START */
+
+checkAdmin();
+
+</script>
+
+</body>
+</html>

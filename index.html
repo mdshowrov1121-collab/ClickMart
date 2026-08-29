@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ClickMart</title>
 
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -27,6 +30,11 @@ header{
   font-size:28px;
   font-weight:800;
   color:#ff4d00;
+}
+.header-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 .cart{
   background:#ff4d00;
@@ -55,6 +63,7 @@ header{
   border-radius:10px;
   background:#ff4d00;
   color:white;
+  cursor:pointer;
 }
 .hero{
   margin:35px 5%;
@@ -72,6 +81,7 @@ header{
   background:white;
   color:#ff4d00;
   font-weight:bold;
+  cursor:pointer;
 }
 section{padding:20px 5%}
 h2{margin-bottom:20px}
@@ -135,33 +145,42 @@ footer{
   text-align:center;
   padding:35px;
 }
-.admin{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:#f5f6f8;
-  z-index:100;
-  overflow:auto;
+
+/* MODALS & OVERLAYS FOR SINGLE PAGE */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  padding: 20px;
 }
-.admin-head{
-  background:#222;
-  color:white;
-  padding:18px 5%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.auth-card, .admin-card-box {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
 }
-.admin-main{padding:25px 5%}
+.admin-container {
+  display: none;
+  padding: 30px 5%;
+}
 .card{
   background:white;
   padding:20px;
   border-radius:15px;
   margin-bottom:20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 .card input,.card textarea{
   width:100%;
   padding:12px;
-  margin:8px 0;
+  margin:8px 0 15px 0;
   border:1px solid #ddd;
   border-radius:8px;
 }
@@ -179,6 +198,9 @@ footer{
   padding:15px;
   border-radius:10px;
   margin-top:10px;
+  display: flex;
+  justify-content:space-between;
+  align-items:center;
 }
 @media(max-width:600px){
   .hero h1{font-size:30px}
@@ -189,154 +211,118 @@ footer{
 
 <body>
 
-<header>
-  <div class="logo">🛒 ClickMart</div>
-  <button class="cart" onclick="showCart()">🛍️ Cart <span id="cartCount">0</span></button>
-</header>
+<!-- MAIN WEBSITE VIEW -->
+<div id="mainWebsite">
+  <header>
+    <div class="logo">🛒 ClickMart</div>
+    <div class="header-right">
+      <button class="btn" style="margin-top:0; background:#333;" onclick="openLoginModal()">Login / Admin</button>
+      <button class="cart" onclick="showCart()">🛍️ Cart <span id="cartCount">0</span></button>
+    </div>
+  </header>
 
-<div class="searchbox">
-  <input id="search" placeholder="Search products..." oninput="renderProducts()">
-  <button onclick="renderProducts()">Search</button>
-</div>
-
-<div class="hero">
-  <h1 id="heroTitle">Big Shopping Sale!</h1>
-  <p id="heroText">Discover amazing products at amazing prices.</p>
-  <button onclick="document.getElementById('products').scrollIntoView()">Shop Now →</button>
-</div>
-
-<section>
-  <h2>Shop By Category</h2>
-  <div class="categories" id="categories"></div>
-</section>
-
-<section id="products">
-  <h2>Popular Products</h2>
-  <div class="products" id="productList"></div>
-</section>
-
-<footer>
-  <div class="logo">🛒 ClickMart</div>
-  <p style="margin-top:10px">© 2026 ClickMart. All Rights Reserved.</p>
-</footer>
-
-<!-- ADMIN DASHBOARD -->
-
-<div class="admin" id="adminPanel">
-
-  <div class="admin-head">
-    <strong>⚙️ ClickMart Admin</strong>
-    <button class="btn" onclick="closeAdmin()">Close</button>
+  <div class="searchbox">
+    <input id="search" placeholder="Search products..." oninput="renderProducts()">
+    <button onclick="renderProducts()">Search</button>
   </div>
 
-  <div class="admin-main">
+  <div class="hero">
+    <h1 id="heroTitle">Big Shopping Sale!</h1>
+    <p id="heroText">Discover amazing products at amazing prices.</p>
+    <button onclick="document.getElementById('products').scrollIntoView()">Shop Now →</button>
+  </div>
 
-    <div class="card">
-      <h2>Store Settings</h2>
+  <section>
+    <h2>Shop By Category</h2>
+    <div class="categories" id="categories"></div>
+  </section>
 
-      <label>Store Name</label>
-      <input id="storeName" value="ClickMart">
+  <section id="products">
+    <h2>Popular Products</h2>
+    <div class="products" id="productList"></div>
+  </section>
 
-      <label>Hero Title</label>
-      <input id="adminHeroTitle" value="Big Shopping Sale!">
+  <footer>
+    <div class="logo">🛒 ClickMart</div>
+    <p style="margin-top:10px">© 2026 ClickMart. All Rights Reserved.</p>
+  </footer>
+</div>
 
-      <label>Hero Description</label>
-      <textarea id="adminHeroText">Discover amazing products at amazing prices.</textarea>
-
-      <button class="btn" onclick="saveSettings()">Save Settings</button>
+<!-- LOGIN / SIGNUP MODAL (একই পেজে পপআপ হিসেবে আসবে) -->
+<div class="overlay" id="loginModal">
+  <div class="auth-card">
+    <h2 style="color:#ff4d00; text-align:center; margin-bottom:10px;">ClickMart Login</h2>
+    <p style="text-align:center; color:#777; margin-bottom:20px;">Access your account or admin panel</p>
+    
+    <label style="font-weight:bold;">Email</label>
+    <input type="email" id="authEmail" placeholder="Enter your email">
+    
+    <label style="font-weight:bold;">Password</label>
+    <input type="password" id="authPassword" placeholder="Enter your password">
+    
+    <div style="display:flex; gap:10px;">
+      <button class="btn" style="flex:1;" onclick="supabaseLogin()">Login</button>
+      <button class="btn" style="flex:1; background:#333;" onclick="supabaseSignUp()">Sign Up</button>
     </div>
 
-    <div class="card">
-      <h2>Add Product</h2>
+    <p id="authMessage" style="text-align:center; margin-top:15px; font-size:14px;"></p>
 
-      <input id="pName" placeholder="Product name">
-      <input id="pPrice" type="number" placeholder="Price">
-      <input id="pOldPrice" type="number" placeholder="Old price">
-      <input id="pCategory" placeholder="Category">
-      <input id="pImage" placeholder="Image URL">
+    <button class="btn" style="width:100%; background:#777; margin-top:15px;" onclick="closeLoginModal()">Close</button>
+  </div>
+</div>
 
-      <button class="btn" onclick="addProduct()">Add Product</button>
-    </div>
+<!-- ADMIN DASHBOARD (লগইন সফল হলে হোমপেজ লুকিয়ে এটি দেখাবে) -->
+<div class="admin-container" id="adminDashboard">
+  <div style="display:flex; justify-content:space-between; align-items:center; background:#222; color:white; padding:15px 25px; border-radius:10px; margin-bottom:25px;">
+    <h2>⚙️ ClickMart Admin Dashboard</h2>
+    <button class="btn" style="margin-top:0; background:#d9534f;" onclick="logoutAdmin()">Logout</button>
+  </div>
 
-    <div class="card">
-      <h2>Products</h2>
-      <div id="adminProducts"></div>
-    </div>
+  <div class="card">
+    <h2>Store Settings</h2>
+    <label>Store Name</label>
+    <input id="storeName" value="ClickMart">
+    <label>Hero Title</label>
+    <input id="adminHeroTitle" value="Big Shopping Sale!">
+    <label>Hero Description</label>
+    <textarea id="adminHeroText">Discover amazing products at amazing prices.</textarea>
+    <button class="btn" onclick="saveSettings()">Save Settings</button>
+  </div>
 
+  <div class="card">
+    <h2>Add Product</h2>
+    <input id="pName" placeholder="Product name">
+    <input id="pPrice" type="number" placeholder="Price">
+    <input id="pOldPrice" type="number" placeholder="Old price">
+    <input id="pCategory" placeholder="Category">
+    <input id="pImage" placeholder="Image URL">
+    <button class="btn" onclick="addProduct()">Add Product</button>
+  </div>
+
+  <div class="card">
+    <h2>Manage Products</h2>
+    <div id="adminProducts"></div>
   </div>
 </div>
 
 <script>
-
-/* =========================
-   SUPABASE CONFIG
-========================= */
-
-const SUPABASE_URL =
-"https://xmgvszxmofbyzejcxlku.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_c8vQsp8cKDjkWjRLCpvoNQ_qoOUvYAB";
-
-
-/* =========================
-   DEMO DATA
-========================= */
+/* SUPABASE CONFIG */
+const SUPABASE_URL = "https://xmgvszxmofbyzejcxlku.supabase.co";
+const SUPABASE_KEY = "sb_publishable_c8vQsp8cKDjkWjRLCpvoNQ_qoOUvYAB";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let products = [
- {
-  id:1,
-  name:"Smartphone Pro",
-  price:18999,
-  oldPrice:23999,
-  category:"Electronics",
-  image:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600"
- },
- {
-  id:2,
-  name:"Wireless Headphone",
-  price:1499,
-  oldPrice:1799,
-  category:"Electronics",
-  image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600"
- },
- {
-  id:3,
-  name:"Smart Watch",
-  price:2099,
-  oldPrice:2999,
-  category:"Watches",
-  image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"
- },
- {
-  id:4,
-  name:"Premium Sneakers",
-  price:1899,
-  oldPrice:2499,
-  category:"Fashion",
-  image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600"
- }
+ { id:1, name:"Smartphone Pro", price:18999, oldPrice:23999, category:"Electronics", image:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600" },
+ { id:2, name:"Wireless Headphone", price:1499, oldPrice:1799, category:"Electronics", image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600" },
+ { id:3, name:"Smart Watch", price:2099, oldPrice:2999, category:"Watches", image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600" },
+ { id:4, name:"Premium Sneakers", price:1899, oldPrice:2499, category:"Fashion", image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600" }
 ];
 
-let cart=[];
-
-let categories=[
- "📱 Electronics",
- "👕 Fashion",
- "🏠 Home",
- "💄 Beauty",
- "🎮 Gaming",
- "⌚ Watches"
-];
-
-
-/* =========================
-   RENDER
-========================= */
+let cart = [];
+let categories = ["📱 Electronics", "👕 Fashion", "🏠 Home", "💄 Beauty", "🎮 Gaming", "⌚ Watches"];
 
 function renderCategories(){
  const box=document.getElementById("categories");
-
  box.innerHTML=categories.map(c=>`
    <div class="category" onclick="filterCategory('${c.replace(/^[^ ]+ /,'')}')">
       <div style="font-size:35px">${c.split(" ")[0]}</div>
@@ -345,159 +331,121 @@ function renderCategories(){
  `).join("");
 }
 
-
 function renderProducts(){
-
  const box=document.getElementById("productList");
-
  const search=document.getElementById("search").value.toLowerCase();
-
- const filtered=products.filter(p =>
-   p.name.toLowerCase().includes(search) ||
-   p.category.toLowerCase().includes(search)
- );
+ const filtered=products.filter(p => p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
 
  box.innerHTML=filtered.map(p=>`
-
    <div class="product">
-
       <img src="${p.image}" alt="${p.name}">
-
       <div class="product-info">
-
         <h3>${p.name}</h3>
-
-        <div style="color:#f5a000;margin-bottom:10px">
-          ★★★★★
-        </div>
-
+        <div style="color:#f5a000;margin-bottom:10px">★★★★★</div>
         <span class="price">৳${Number(p.price).toLocaleString()}</span>
-
-        <span class="old">
-          ৳${Number(p.oldPrice).toLocaleString()}
-        </span>
-
-        <button class="add" onclick="addToCart(${p.id})">
-          Add to Cart
-        </button>
-
+        <span class="old">৳${Number(p.oldPrice).toLocaleString()}</span>
+        <button class="add" onclick="addToCart(${p.id})">Add to Cart</button>
       </div>
-
    </div>
-
  `).join("");
 }
 
-
 function filterCategory(category){
-
  document.getElementById("search").value=category;
-
  renderProducts();
-
 }
 
-
-/* =========================
-   CART
-========================= */
-
 function addToCart(id){
-
  const product=products.find(p=>p.id===id);
-
  cart.push(product);
-
  document.getElementById("cartCount").innerText=cart.length;
-
  alert(product.name+" added to cart!");
 }
 
-
 function showCart(){
+ if(cart.length===0){ alert("Your cart is empty."); return; }
+ let total=cart.reduce((sum,p)=>sum+Number(p.price),0);
+ alert("Cart Items: "+cart.length+"\nTotal: ৳"+total.toLocaleString());
+}
 
- if(cart.length===0){
-   alert("Your cart is empty.");
+/* MODAL CONTROLS */
+function openLoginModal(){ document.getElementById("loginModal").style.display="flex"; }
+function closeLoginModal(){ document.getElementById("loginModal").style.display="none"; }
+
+/* SUPABASE AUTHENTICATION */
+async function supabaseLogin(){
+ const email = document.getElementById("authEmail").value.trim();
+ const password = document.getElementById("authPassword").value;
+ const msg = document.getElementById("authMessage");
+
+ if(!email || !password){ msg.style.color="red"; msg.innerText="Fill in email and password"; return; }
+
+ const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+ if(error){ msg.style.color="red"; msg.innerText=error.message; return; }
+
+ msg.style.color="green";
+ msg.innerText="Login successful!";
+ 
+ setTimeout(() => {
+   closeLoginModal();
+   checkAdmin(data.user.id);
+ }, 800);
+}
+
+async function supabaseSignUp(){
+ const email = document.getElementById("authEmail").value.trim();
+ const password = document.getElementById("authPassword").value;
+ const msg = document.getElementById("authMessage");
+
+ if(!email || !password){ msg.style.color="red"; msg.innerText="Fill in email and password"; return; }
+
+ const { data, error } = await supabaseClient.auth.signUp({ email, password });
+ if(error){ msg.style.color="red"; msg.innerText=error.message; return; }
+
+ msg.style.color="green";
+ msg.innerText="Sign up successful! Check your email.";
+}
+
+async function checkAdmin(userId){
+ const { data, error } = await supabaseClient.from('admins').select('*').eq('user_id', userId).maybeSingle();
+ if(error || !data){
+   alert("Logged in successfully, but you are not an admin!");
    return;
  }
-
- let total=cart.reduce((sum,p)=>sum+Number(p.price),0);
-
- alert(
-   "Cart Items: "+cart.length+
-   "\nTotal: ৳"+total.toLocaleString()
- );
-
-}
-
-
-/* =========================
-   ADMIN
-========================= */
-
-function openAdmin(){
-
- document.getElementById("adminPanel").style.display="block";
-
+ // Switch view to Admin Dashboard
+ document.getElementById("mainWebsite").style.display="none";
+ document.getElementById("adminDashboard").style.display="block";
  renderAdminProducts();
-
 }
 
-
-function closeAdmin(){
-
- document.getElementById("adminPanel").style.display="none";
-
+async function logoutAdmin(){
+ await supabaseClient.auth.signOut();
+ document.getElementById("adminDashboard").style.display="none";
+ document.getElementById("mainWebsite").style.display="block";
+ alert("Logged out successfully!");
 }
-
-
-/* Hidden admin shortcut:
-   Add ?admin=true to your website URL
-*/
-
-if(new URLSearchParams(location.search).get("admin")==="true"){
- setTimeout(openAdmin,500);
-}
-
 
 function renderAdminProducts(){
-
  const box=document.getElementById("adminProducts");
-
  box.innerHTML=products.map(p=>`
-
    <div class="product-row">
-
-     <strong>${p.name}</strong>
-
-     <p>Price: ৳${p.price}</p>
-
-     <p>Category: ${p.category}</p>
-
-     <button class="btn"
-       onclick="deleteProduct(${p.id})">
-       Delete
-     </button>
-
+     <div>
+       <strong>${p.name}</strong>
+       <p style="color:#777; font-size:14px;">Price: ৳${p.price} | Category: ${p.category}</p>
+     </div>
+     <button class="btn" style="margin-top:0; background:#d9534f;" onclick="deleteProduct(${p.id})">Delete</button>
    </div>
-
  `).join("");
-
 }
 
-
 function addProduct(){
-
  const name=document.getElementById("pName").value;
  const price=document.getElementById("pPrice").value;
  const oldPrice=document.getElementById("pOldPrice").value;
  const category=document.getElementById("pCategory").value;
  const image=document.getElementById("pImage").value;
 
- if(!name || !price){
-   alert("Product name and price are required.");
-   return;
- }
+ if(!name || !price){ alert("Product name and price are required."); return; }
 
  products.push({
    id:Date.now(),
@@ -516,44 +464,26 @@ function addProduct(){
 
  renderProducts();
  renderAdminProducts();
-
- alert("Product added!");
-
+ alert("Product added successfully!");
 }
-
 
 function deleteProduct(id){
-
  if(!confirm("Delete this product?")) return;
-
  products=products.filter(p=>p.id!==id);
-
  renderProducts();
  renderAdminProducts();
-
 }
-
 
 function saveSettings(){
-
  const title=document.getElementById("adminHeroTitle").value;
  const text=document.getElementById("adminHeroText").value;
-
  document.getElementById("heroTitle").innerText=title;
  document.getElementById("heroText").innerText=text;
-
  alert("Settings saved!");
-
 }
-
-
-/* =========================
-   START
-========================= */
 
 renderCategories();
 renderProducts();
-
 </script>
 
 </body>

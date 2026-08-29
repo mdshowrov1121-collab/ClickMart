@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ClickMart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fff4ed, #f5f6f8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 35px 28px;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,.12);
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 800;
+      color: #ff4d00;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #ff4d00;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #ff4d00;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+    }
+
+    .signup {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+
+    .signup a {
+      color: #ff4d00;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      color: #777;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-box">
+
+    <div class="logo">🛒 ClickMart</div>
+
+    <p class="subtitle">Login to your account</p>
+
+    <form id="loginForm">
+
+      <label>Email</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+        required
+      >
+
+      <label>Password</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter your password"
+        required
+      >
+
+      <button type="submit" id="loginBtn">
+        Login
+      </button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <div class="signup">
+      Don't have an account?
+      <a href="#" onclick="signup()">Sign Up</a>
+    </div>
+
+    <a class="back" href="index.html">
+      ← Back to Store
+    </a>
+
+  </div>
+
+<script>
+
+const SUPABASE_URL =
+"https://xmgvszxmofbyzejcxlku.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_c8vQsp8cKDjkWjRLCpvoNQ_qoOUvYAB";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+document.getElementById("loginForm")
+.addEventListener("submit", async function(e) {
+
+  e.preventDefault();
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const message =
+    document.getElementById("message");
+
+  const button =
+    document.getElementById("loginBtn");
+
+  button.disabled = true;
+  button.textContent = "Logging in...";
+
+  message.textContent = "";
+
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+  if (error) {
+
+    message.style.color = "red";
+    message.textContent = error.message;
+
+    button.disabled = false;
+    button.textContent = "Login";
+
+    return;
+  }
+
+  message.style.color = "green";
+  message.textContent = "Login successful!";
+
+  setTimeout(function() {
+    window.location.href = "admin.html";
+  }, 800);
+
+});
+
+
+async function signup() {
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const message =
+    document.getElementById("message");
+
+  if (!email || !password) {
+    message.style.color = "red";
+    message.textContent =
+      "Enter email and password first.";
+    return;
+  }
+
+  if (password.length < 6) {
+    message.style.color = "red";
+    message.textContent =
+      "Password must be at least 6 characters.";
+    return;
+  }
+
+  const { error } =
+    await supabaseClient.auth.signUp({
+      email: email,
+      password: password
+    });
+
+  if (error) {
+    message.style.color = "red";
+    message.textContent = error.message;
+    return;
+  }
+
+  message.style.color = "green";
+  message.textContent =
+    "Account created! Check your email.";
+}
+
+</script>
+
+</body>
+</html>
